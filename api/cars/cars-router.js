@@ -24,7 +24,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', checkCarId, async (req, res, next) => {
   try {
     const car = await getById(req.params.id);
     res.json(car);
@@ -33,16 +33,22 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
-  try {
-    const newCar = await create(req.body);
-    res.status(201).json(newCar);
-  } catch (error) {
-    next(error);
+router.post(
+  '/',
+  checkCarPayload,
+  checkVinNumberValid,
+  checkVinNumberUnique,
+  async (req, res, next) => {
+    try {
+      const newCar = await create(req.body);
+      res.status(201).json(newCar);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', checkCarId, checkVinNumberValid, async (req, res, next) => {
   try {
     const updatedCar = await updateById(req.params.id, req.body);
     res.json(updatedCar);
@@ -51,7 +57,7 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', checkCarId, async (req, res, next) => {
   try {
     const deletedCar = await deleteById(req.params.id);
     res.json(deletedCar);
